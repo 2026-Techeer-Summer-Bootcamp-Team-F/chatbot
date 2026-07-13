@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# OMC / 에디터
+.omc/
+.DS_Store
+.idea/
+.vscode/
+
+# 로컬 환경
+.env

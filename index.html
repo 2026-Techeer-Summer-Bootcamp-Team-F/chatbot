@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NimbusPay · 고객지원</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --brand:#5b5bf5; --brand-2:#8b5cf6; --ink:#0f1222; --sub:#8b90a8;
+    --bg:#eef0f7; --card:#ffffff; --bot-bubble:#f1f3fa; --user-bubble:linear-gradient(135deg,#5b5bf5,#8b5cf6);
+    --line:#e8eaf2; --shadow:0 20px 50px -12px rgba(35,40,90,.28);
+  }
+  body{
+    font-family:-apple-system,"Apple SD Gothic Neo","Pretendard","Segoe UI",sans-serif;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, #e5e9ff 0%, transparent 55%),
+      radial-gradient(1000px 700px at 110% 10%, #efe4ff 0%, transparent 50%),
+      var(--bg);
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;color:var(--ink);
+  }
+  .app{
+    width:min(440px,100%);height:min(720px,92vh);background:var(--card);
+    border-radius:28px;display:flex;flex-direction:column;overflow:hidden;
+    box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.7);
+  }
+  /* header */
+  header{padding:18px 20px;display:flex;align-items:center;gap:13px;border-bottom:1px solid var(--line);position:relative}
+  .avatar{
+    width:44px;height:44px;border-radius:14px;flex:none;position:relative;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:700;
+    box-shadow:0 8px 18px -6px rgba(91,91,245,.6);
+  }
+  .avatar::after{content:"";position:absolute;right:-2px;bottom:-2px;width:13px;height:13px;border-radius:50%;background:#26d07c;border:2.5px solid #fff}
+  .htxt h1{font-size:16px;font-weight:750;letter-spacing:-.2px}
+  .htxt p{font-size:12.5px;color:var(--sub);margin-top:2px;display:flex;align-items:center;gap:5px}
+  .htxt p::before{content:"";width:6px;height:6px;border-radius:50%;background:#26d07c}
+  .menu{margin-left:auto;color:var(--sub);font-size:20px;letter-spacing:2px;cursor:pointer;user-select:none}
+  /* log */
+  #log{flex:1;overflow-y:auto;padding:22px 18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+  #log::-webkit-scrollbar{width:6px}
+  #log::-webkit-scrollbar-thumb{background:#d7dbe8;border-radius:3px}
+  .row{display:flex;gap:9px;align-items:flex-end;max-width:88%;animation:pop .26s cubic-bezier(.2,.8,.2,1)}
+  .row.user{align-self:flex-end;flex-direction:row-reverse}
+  .row .pic{width:28px;height:28px;border-radius:9px;flex:none;background:linear-gradient(135deg,var(--brand),var(--brand-2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+  .bubble{padding:11px 15px;border-radius:18px;font-size:14.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}
+  .bot .bubble{background:var(--bot-bubble);color:#20233a;border-bottom-left-radius:6px}
+  .user .bubble{background:var(--user-bubble);color:#fff;border-bottom-right-radius:6px;box-shadow:0 10px 22px -10px rgba(91,91,245,.7)}
+  .time{font-size:10.5px;color:var(--sub);margin:3px 4px 0}
+  /* typing */
+  .dots{display:flex;gap:4px;padding:14px 16px;background:var(--bot-bubble);border-radius:18px;border-bottom-left-radius:6px}
+  .dots span{width:7px;height:7px;border-radius:50%;background:#b9bfd4;animation:bounce 1.2s infinite}
+  .dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+  /* input */
+  form{padding:14px 16px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;background:#fff}
+  .field{flex:1;display:flex;align-items:center;background:#f3f4fb;border:1.5px solid transparent;border-radius:16px;padding:2px 6px 2px 16px;transition:border-color .15s}
+  .field:focus-within{border-color:var(--brand);background:#fff}
+  input{flex:1;border:none;background:transparent;outline:none;font-size:14.5px;padding:12px 0;color:var(--ink)}
+  input::placeholder{color:#a7adc4}
+  #send{width:44px;height:44px;flex:none;border:none;border-radius:14px;cursor:pointer;
+    background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;font-size:18px;
+    display:flex;align-items:center;justify-content:center;transition:transform .12s,opacity .15s;
+    box-shadow:0 10px 20px -8px rgba(91,91,245,.7)}
+  #send:active{transform:scale(.92)}
+  #send:disabled{opacity:.45;cursor:default}
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.55}30%{transform:translateY(-5px);opacity:1}}
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="avatar">N</div>
+      <div class="htxt">
+        <h1>NimbusPay 고객지원</h1>
+        <p>지금 대화 가능</p>
+      </div>
+      <div class="menu">⋯</div>
+    </header>
+    <div id="log"></div>
+    <form id="f">
+      <div class="field">
+        <input id="q" placeholder="메시지를 입력하세요…" autocomplete="off" autofocus>
+      </div>
+      <button id="send" type="submit" aria-label="전송">↑</button>
+    </form>
+  </div>
+<script>
+  const log=document.getElementById('log'),form=document.getElementById('f'),
+        input=document.getElementById('q'),sendBtn=document.getElementById('send');
+  const now=()=>new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+
+  function bubble(text,who){
+    const row=document.createElement('div');row.className='row '+who;
+    const pic=document.createElement('div');pic.className='pic';pic.textContent=who==='bot'?'N':'나';
+    const wrap=document.createElement('div');
+    const b=document.createElement('div');b.className='bubble';b.textContent=text;
+    const t=document.createElement('div');t.className='time';t.textContent=now();
+    wrap.appendChild(b);wrap.appendChild(t);
+    row.appendChild(pic);row.appendChild(wrap);
+    log.appendChild(row);log.scrollTop=log.scrollHeight;
+    return b;
+  }
+  function typing(){
+    const row=document.createElement('div');row.className='row bot';
+    const pic=document.createElement('div');pic.className='pic';pic.textContent='N';
+    const d=document.createElement('div');d.className='dots';d.innerHTML='<span></span><span></span><span></span>';
+    row.appendChild(pic);row.appendChild(d);log.appendChild(row);log.scrollTop=log.scrollHeight;
+    return row;
+  }
+
+  bubble('안녕하세요! NimbusPay 고객지원입니다 😊 계좌, 카드, 송금 무엇이든 도와드릴게요.','bot');
+
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const msg=input.value.trim();if(!msg)return;
+    bubble(msg,'user');input.value='';sendBtn.disabled=true;
+    const t=typing();
+    try{
+      const r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg})});
+      const data=await r.json();t.remove();
+      bubble(data.reply||'(빈 응답)','bot');
+    }catch(err){t.remove();bubble('일시적으로 연결이 원활하지 않아요. 잠시 후 다시 시도해주세요.','bot');}
+    finally{sendBtn.disabled=false;input.focus();}
+  });
+</script>
+</body>
+</html>
