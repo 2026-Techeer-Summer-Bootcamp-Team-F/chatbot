@@ -77,3 +77,51 @@ PORT=9100 OLLAMA_MODEL=llama3.2:1b python3 app.py # 포트/모델 변경(옵션)
   OpenAI 형태로 지정(단, 기본 `/chat`이 가장 간단).
 
 스캔 실행(`POST /scans`)은 레드팀 백엔드 API 명세 §4 참고.
+
+---
+
+## 클라우드(배포된 REDI)에서 이 로컬 챗봇 공격 — 터널로 공개
+
+배포된 REDI(Vercel 프론트 + EC2 백엔드)는 **인터넷 위 원격 서버**라, 네 노트북의
+`localhost:8100` 챗봇에 그대로는 닿지 못한다. 발표/시연에서 **진짜 이 챗봇을 원격 REDI가
+공격하게** 하려면, 터널로 임시 공개 주소를 만들어 그 주소를 표적으로 등록한다.
+
+### 1) 챗봇을 켜둔다
+```bash
+python3 app.py     # http://localhost:8100
+```
+
+### 2) 터널로 공개 주소 생성 (별도 터미널, 데모 내내 켜둠)
+
+**cloudflared** (권장 — 경고 페이지 없음, 로그인 불필요):
+```bash
+brew install cloudflared            # 미설치 시
+cloudflared tunnel --url http://localhost:8100
+# 출력 예: https://random-words-1234.trycloudflare.com
+```
+
+**ngrok** (대안):
+```bash
+brew install ngrok
+ngrok http 8100
+# Forwarding 줄의 https://xxxx.ngrok-free.app 사용
+```
+
+- 실행하면 `https://…trycloudflare.com` (혹은 `…ngrok-free.app`) **공개 URL**이 뜬다.
+- 이 URL은 인터넷 누구나(=EC2 워커 포함) 접근 가능 → REDI가 원격에서 공격 가능해진다.
+- **quick tunnel은 실행할 때마다 주소가 바뀌고, Ctrl+C 로 끄면 즉시 사라진다.**
+
+### 3) REDI 웹에서 표적 URL로 등록
+공개 URL 뒤에 `/chat`을 붙여 등록한다. `/chat`이 액터 기본 config와 일치하므로 URL만 있으면 된다:
+```json
+{
+  "actor_type": "http",
+  "url": "https://random-words-1234.trycloudflare.com/chat",
+  "canary": "FLAG{nimbuspay_pr0mpt_1nj3ct10n_2026}"
+}
+```
+등록 후 스캔을 돌리면 EC2 → 터널 → 이 로컬 챗봇으로 **실제 공격**이 꽂히고, 리포트에
+FLAG·PII 유출 등 진짜 취약점이 나온다.
+
+> ⚠️ **의도적으로 취약한 데모봇**이라 공개돼도 실피해는 없지만(가짜 비밀), 습관적으로
+> **데모가 끝나면 터널을 반드시 Ctrl+C 로 종료**한다. 상시 노출 금지.
